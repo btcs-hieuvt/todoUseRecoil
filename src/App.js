@@ -19,9 +19,18 @@ function App() {
 function setStatusFilter (statusBtn){
   setStatusBtn(statusBtn)
 }
+// save todo in localstorage
+// useEffect(()=>{
+//   const storageTodo =localStorage.getItem('Todos')
+//   if(storageTodo){
+//     setTodolist(JSON.parse(storageTodo))
+//   }
+// },[])
+useEffect(()=>{
 
+  localStorage.setItem('Todos',JSON.stringify(todolist))
 
-
+},[todolist])
 
 // check all todo
 function checkAllTodo(){

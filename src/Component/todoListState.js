@@ -1,11 +1,20 @@
 import { atom, selector } from "recoil";
 
+const todoStorage =()=>{
 
+  const storageTodo =localStorage.getItem('Todos')
+  if(storageTodo){
+    // setTodolist(JSON.parse(storageTodo))
+    return  JSON.parse(storageTodo)
+  }else{
+    return []
+  }
+}
 export const todoListState =atom({
    
    
     key: 'todoList',
-    default:[],
+    default:todoStorage(),
 
 })
 export const textState = atom({
