@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-
 import {FaTimes} from 'react-icons/fa'
 import {AiOutlineCheck} from 'react-icons/ai'
 import '../App.css';
@@ -15,16 +14,15 @@ function Todo(props) {
     const idTodoEdit = useRecoilValue(idTodoEditState)
     // const setTodoList =useSetRecoilState(todoListState)
     const isEditTodo = idTodoEdit === todo.id
-    console.log(idTodoEdit);
 
-    function editTodo(){
+    function editTodo(id){
         if(text.trim()){
             onEditTodo(
                 {
                     ...todo,
                     title:text
-                },index )
-    
+                },index ,todo.docId)
+               
         }
         
         
@@ -44,7 +42,7 @@ function Todo(props) {
                         type="checkbox" 
                         name=""
                         checked={todo.isCompleted} 
-                        onChange={()=> toggleTodo(index)}
+                        onChange={()=> toggleTodo(index,todo.docId)}
                         />
                         <AiOutlineCheck 
                             className='check absolute top-[-10px] left-[10px] text-[20px] text-[#7ecfbf] text-opacity-0 transition-all'
@@ -63,7 +61,7 @@ function Todo(props) {
                 </label>
                 <FaTimes 
                         className='hidden group-hover:block w-[40px] text-[#af5b5ea8] hover:text-[#af5b5e] text-[16px] font-thin'
-                        onClick={()=> deleteTodo(index)}
+                        onClick={()=> deleteTodo(index,todo.docId)}
                 />
             </div>)
                 :
@@ -78,7 +76,7 @@ function Todo(props) {
                         onBlur={editTodo}
                         onKeyPress={(e)=>{
                             if(e.key === 'Enter' && text.trim()){
-                                editTodo()
+                                editTodo(todo.docId)
                             }
                            
                         }}

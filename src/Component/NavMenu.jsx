@@ -23,8 +23,9 @@ function NavMenu() {
     const [statusLogin, setStatusLogin] = useState(false)
     const { user: {
         displayName, photoURL,
-    } } = useContext(AuthContext)
-    console.log(displayName === undefined);
+    }  } = useContext(AuthContext)
+    // const idDocUser = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+  
     useEffect(() => {
         if (displayName) {
             setStatusLogin(true)
@@ -32,7 +33,7 @@ function NavMenu() {
         }
 
     }, [displayName])
-    console.log(statusLogin);
+  
     return (
         <div
             className='w-[100vw] h-[60px] flex items-center justify-between bg-gradient-to-b from-[#fdfdff] to-[#f4f5f9] px-[40px] border-[1px]'
@@ -56,7 +57,7 @@ function NavMenu() {
                         <div
                             className=' cursor-pointer'
                             onClick={handleSignOut}
-                        > dang xuat</div>
+                        > Logout</div>
                         <div>
                             <img
                                 className='mx-[6px] w-[30px] h-[30px]  rounded-[100%]'

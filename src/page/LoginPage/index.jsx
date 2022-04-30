@@ -10,18 +10,18 @@ function LoginPage() {
     const handleGgLogin =async ()=>{
 
     const {additionalUserInfo,user} = await auth.signInWithPopup(ggProvider)
-    //   console.log(data);
+      console.log(user);
     if(additionalUserInfo?.isNewUser){
         addDocument('user',{
+            // idUser: id,
             displayName:user.displayName,
             email :user.email,
             photoURL:user.photoURL,
-            uid:user.displayName,
+            uid:user.uid,
             providerId:additionalUserInfo.providerId
         })
     }
-        // const Navigate = useNavigate()
-        // Navigate('/')
+    
     }
     
     

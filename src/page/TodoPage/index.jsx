@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect ,useContext} from 'react';
 import '../../App.css';
 import Footer from '../../Component/Footer.jsx';
 import Header from '../../Component/Header.jsx';
@@ -7,14 +7,35 @@ import TodoLists from '../../Component/TodoLists.jsx';
 import audioMeme from '../../assets/audio/meme.mp3'
 import { useRecoilState,useRecoilValue } from 'recoil';
 import { todoListState,statusBtnState,todoListStatsState } from '../../Component/todoListState';
+import { AuthContext } from '../../Context/AuthProvider'
+import {db} from '../../firebase/config'
+import {collection, getDocs,updateDoc,doc} from 'firebase/firestore'
+
 function TodoPage() {
 
     const [todolist,setTodolist ] =useRecoilState(todoListState)
     const [statusBtn,setStatusBtn] = useRecoilState(statusBtnState)
   
-    // const todoList = useRecoilValue(filteredTodoListState);
     const {numOfTodo, numOfTodoActive,todoActive,} = useRecoilValue(todoListStatsState)
-  
+
+  //get todo from firestore
+  const { user: {uid}  } = useContext(AuthContext)
+  const todoCollectionRef= collection(db,"todos")
+ 
+  useEffect(()=>{
+
+    const getTodos =async ()=>{
+        const data =await getDocs(todoCollectionRef)
+        const getTodo = data.docs.map((doc)=>({...doc.data(),docId:doc.id}))
+        
+        setTodolist(getTodo)
+        
+      }
+      return ()=>{
+        getTodos()
+      }
+  },[])
+  //
   function setStatusFilter (statusBtn){
     setStatusBtn(statusBtn)
   }
@@ -27,17 +48,20 @@ function TodoPage() {
   },[todolist])
   
   // check all todo
-  function checkAllTodo(){
   
+  function checkAllTodo(id){
+    const todoDoc =doc(db,"todos",id)
+    console.log(id);
     const checkAllTodo =  [...todolist].map(todo => {
           if(numOfTodoActive > 0){
-              // console.log(todo);
-                // todo.isCompleted =true
+            updateDoc(todoDoc,{isCompleted : true})
                 return {
                   ...todo,
-                  isCompleted : true
+                  isCompleted : true,
                 }
+               
           }else{
+            updateDoc(todoDoc,{isCompleted : false})
             return {
               ...todo,
               isCompleted : false
@@ -45,7 +69,10 @@ function TodoPage() {
           }
          
         })
+       
         setTodolist(checkAllTodo)
+        
+
         
   }
   
@@ -107,8 +134,9 @@ function TodoPage() {
       <div className="mx-[auto] w-[550px] ">
         
         <Header 
+
             checkAllTodo={checkAllTodo}
-            
+            todoCollectionRef={todoCollectionRef}
         />
         <TodoLists 
             
@@ -120,6 +148,7 @@ function TodoPage() {
                   clearCompleted={clearCompleted}
                   numOfTodos ={numOfTodo}
                   numOfTodoLeft={numOfTodoActive}
+                  todoCollectionRef={todoCollectionRef}
                   
                />
            }

@@ -29,7 +29,7 @@ function AuthProvider({children}) {
                 Navigate('/')
             }else{
                 setIsLoading(false)
-                Navigate('/login')
+                Navigate('/login')  
             } 
             
         })

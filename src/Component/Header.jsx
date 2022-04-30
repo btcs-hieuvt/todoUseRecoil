@@ -1,24 +1,31 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { AiOutlineDown } from 'react-icons/ai'
 import { useRecoilState } from 'recoil'
+import { v4 as uuidv4 } from 'uuid';
 import { todoListState,textState } from './todoListState'
+import { AuthContext } from '../Context/AuthProvider'
+import {addDoc} from 'firebase/firestore'
 
 function Header(props) {
-    const {checkAllTodo } =props
+    const {checkAllTodo,todoCollectionRef } =props
     const [text, setText] = useRecoilState(textState)
     const   [todolist, setTodoList ] =useRecoilState(todoListState)
 
+    const { user: {uid}  } = useContext(AuthContext)
     const onChange =(e)=>{
         setText(e.target.value)
     }
+
+    const todoDocId = todolist.map(todo=> todo.docId)
+    const  id =uuidv4()
     function onAddTodo(e) {
         // console.log(e.key)
 
         if (e.key === 'Enter' && text.trim()) {
             const todoListNew =(oldTodolist)=>{
                 const newTodoList= [ ...oldTodolist,
-                       {
-                           id: new Date().valueOf(),
+                       {   userUid:uid,
+                           id: id.toString(),
                            title: text,
                            isCompleted: false
                        }
@@ -27,7 +34,11 @@ function Header(props) {
                    return newTodoList
                }
             setTodoList(todoListNew)
-            
+            addDoc(todoCollectionRef,{ 
+                userUid:uid,
+                id: new Date().valueOf(),
+                title: text,
+                isCompleted: false})
             setText('')
         }
     }
@@ -54,7 +65,7 @@ function Header(props) {
                 {todolist.length === 0?
                     '' :
                             <AiOutlineDown
-                                onClick={checkAllTodo}
+                                onClick={()=>checkAllTodo(todoDocId)}
                                 id='toggleAll'
                                  className={`absolute bottom-[20px] left-[10px] text-[22px]
                                           cursor-pointer text-[#ddd]  transition-all
