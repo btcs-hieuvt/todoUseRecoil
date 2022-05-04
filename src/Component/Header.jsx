@@ -36,7 +36,7 @@ function Header(props) {
             setTodoList(todoListNew)
             addDoc(todoCollectionRef,{ 
                 userUid:uid,
-                id: new Date().valueOf(),
+                id:id.toString(),
                 title: text,
                 isCompleted: false})
             setText('')

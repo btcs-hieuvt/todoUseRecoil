@@ -10,6 +10,7 @@ import { todoListState,statusBtnState,todoListStatsState } from '../../Component
 import { AuthContext } from '../../Context/AuthProvider'
 import {db} from '../../firebase/config'
 import {collection, getDocs,updateDoc,doc} from 'firebase/firestore'
+import Share from '../../Component/Share';
 
 function TodoPage() {
 
@@ -21,14 +22,19 @@ function TodoPage() {
   //get todo from firestore
   const { user: {uid}  } = useContext(AuthContext)
   const todoCollectionRef= collection(db,"todos")
- 
+  
   useEffect(()=>{
 
     const getTodos =async ()=>{
         const data =await getDocs(todoCollectionRef)
         const getTodo = data.docs.map((doc)=>({...doc.data(),docId:doc.id}))
+      
+        getTodo.map((todo)=>{
+            if(uid === todo.userUid){
+                setTodolist(getTodo)
+            }
+        })
         
-        setTodolist(getTodo)
         
       }
       return ()=>{
@@ -50,18 +56,20 @@ function TodoPage() {
   // check all todo
   
   function checkAllTodo(id){
-    const todoDoc =doc(db,"todos",id)
+    
     console.log(id);
     const checkAllTodo =  [...todolist].map(todo => {
           if(numOfTodoActive > 0){
-            updateDoc(todoDoc,{isCompleted : true})
+            const todoDoc =doc(db,"todos",todo.id)
+            updateDoc(todoDoc,{...todo,isCompleted : true})
                 return {
                   ...todo,
                   isCompleted : true,
                 }
                
           }else{
-            updateDoc(todoDoc,{isCompleted : false})
+            const todoDoc =doc(db,"todos",todo.id)
+            updateDoc(todoDoc,{...todo,isCompleted : false})
             return {
               ...todo,
               isCompleted : false
@@ -69,7 +77,7 @@ function TodoPage() {
           }
          
         })
-       
+      //  updateDoc(todoDoc,checkAllTodo)
         setTodolist(checkAllTodo)
         
 
@@ -138,9 +146,7 @@ function TodoPage() {
             checkAllTodo={checkAllTodo}
             todoCollectionRef={todoCollectionRef}
         />
-        <TodoLists 
-            
-        />
+        <TodoLists />
           {todolist.length === 0 ? ""  :
                <Footer
                   statusBtn={statusBtn}
@@ -152,6 +158,7 @@ function TodoPage() {
                   
                />
            }
+        <Share />
         
       </div>
       <audio  src={audioMeme}  id='Audio'> </audio>
